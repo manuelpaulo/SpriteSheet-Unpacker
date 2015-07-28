@@ -161,7 +161,28 @@
         [sprite visit];
         [render end];
         
-        NSString* fullpath = [folder stringByAppendingPathComponent:spriteName];
+        //fixes the very common "run/sprite1, fire/sprite1" where the "/" is part of the file name 
+        //and will crash when saving. After packing the sprites again, just search the plists 
+        //for "_€_" and replace with "/". Done.
+        
+        NSLog(@"spriteName: %@", spriteName);
+        
+        NSString *spriteNamefinal = @" ";
+        
+        if ([spriteName rangeOfString:@"/"].location == NSNotFound) {
+            NSLog(@"string does not contain /");
+            spriteNamefinal = spriteName;
+        } else {
+            NSLog(@"string contains /");
+            spriteNamefinal = [spriteName stringByReplacingOccurrencesOfString:@"/" withString:@"_€_"];
+        }
+        NSLog(@"spriteName final: %@", spriteNamefinal); //zz
+
+        
+        
+        
+        NSString* fullpath = [folder stringByAppendingPathComponent:spriteNamefinal];
+        //NSString* fullpath = [folder stringByAppendingPathComponent:spriteName];
         BOOL success = [render saveToFile:fullpath];
         NSLog(@"%s,%d save %@ success:%@", __FUNCTION__, __LINE__,spriteName,success?@"YES":@"NO");
         if(!success)
